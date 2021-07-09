@@ -114,6 +114,27 @@ private:
     set<uint32_t> _pts_sorter;
 };
 
+class RtpStampSync {
+public:
+    void inputRtpStamp(int index, uint32_t rtp_stamp_ms, uint64_t ntp_stamp_ms);
+
+    /**
+     * 返回 rtp0需要增加的时间戳diff，单位毫秒
+     * 或者 rtp0 ntp 需要减去的时间戳diff，单位毫秒
+     */
+     int64_t getRtpStampDiff() const;
+
+     /**
+      * 时候计算出rtp时间戳diff
+      */
+     bool ready() const;
+
+private:
+    bool _flag[2] = {false, false};
+    uint32_t _rtp_stamp[2] = {0,0};
+    uint32_t _ntp_stamp[2] = {0,0};
+};
+
 }//namespace mediakit
 
 #endif //ZLMEDIAKIT_STAMP_H

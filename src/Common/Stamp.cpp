@@ -215,4 +215,39 @@ bool DtsGenerator::getDts_l(uint32_t pts, uint32_t &dts){
     return false;
 }
 
+///////////////////////////////////////////////////////////////////////////
+
+static int64_t getRtpStampDiff_l(uint32_t rtp0_stamp_ms, uint32_t rtp1_stamp_ms,
+                               uint64_t ntp0_stamp_ms, uint64_t ntp1_stamp_ms) {
+    int64_t rtp_stamp_diff = (int64_t) rtp0_stamp_ms - (int64_t) rtp1_stamp_ms;
+    int64_t ntp_stamp_dff;
+    if (ntp0_stamp_ms > ntp1_stamp_ms) {
+        ntp_stamp_dff = ntp0_stamp_ms - ntp1_stamp_ms;
+    } else {
+        ntp_stamp_dff = -(ntp1_stamp_ms - ntp0_stamp_ms);
+    }
+    return ntp_stamp_dff - rtp_stamp_diff;
+}
+
+void RtpStampSync::inputRtpStamp(int index, uint32_t rtp_stamp_ms, uint64_t ntp_stamp_ms){
+    assert(index < 2 && index >= 0);
+    _flag[index] = true;
+    _rtp_stamp[index] = rtp_stamp_ms;
+    _ntp_stamp[index] = ntp_stamp_ms;
+}
+
+int64_t RtpStampSync::getRtpStampDiff() const {
+    if (!_flag[0] || !_flag[1]) {
+        return false;
+    }
+    return getRtpStampDiff_l(_rtp_stamp[0], _rtp_stamp[1],
+                             _ntp_stamp[0], _ntp_stamp[1]);
+}
+
+bool RtpStampSync::ready() const{
+    return _flag[0] && _flag[1];
+}
+
+
+
 }//namespace mediakit

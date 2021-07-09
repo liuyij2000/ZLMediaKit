@@ -488,6 +488,11 @@ void RtspPlayer::onRtcpPacket(int track_idx, SdpTrack::Ptr &track, uint8_t *data
     auto rtcp_arr = RtcpHeader::loadFromBytes((char *) data, len);
     for (auto &rtcp : rtcp_arr) {
         _rtcp_context[track_idx]->onRtcp(rtcp);
+        if (rtcp->pt == (uint8_t)RtcpType::RTCP_SR) {
+            auto sr = (RtcpSR *)rtcp;
+            _rtp_stamp_sync.inputRtpStamp(track_idx, sr->rtpts * uint64_t(1000) / _sdp_track[track_idx]->_samplerate,
+                                          sr->getNtpUnixStampMS());
+        }
     }
 }
 
@@ -590,6 +595,10 @@ void RtspPlayer::sendRtspRequest(const string &cmd, const string &url,const StrC
 }
 
 void RtspPlayer::onBeforeRtpSorted(const RtpPacket::Ptr &rtp, int track_idx){
+    if (_rtp_stamp_sync.ready() && track_idx == 0) {
+        //fixme 此处时间戳可能溢出
+        rtp->getHeader()->stamp += (_rtp_stamp_sync.getRtpStampDiff() * rtp->sample_rate / 1000);
+    }
     auto &rtcp_ctx = _rtcp_context[track_idx];
     rtcp_ctx->onRtp(rtp->getSeq(), ntohl(rtp->getHeader()->stamp), rtp->sample_rate, rtp->size() - RtpPacket::kRtpTcpHeaderSize);
 

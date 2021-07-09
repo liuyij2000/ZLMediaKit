@@ -215,6 +215,7 @@ private:
     Ticker _rtcp_send_tickers[2];
     //统计rtp并发送rtcp
     vector<RtcpContext::Ptr> _rtcp_context;
+    RtpStampSync _rtp_stamp_sync;
 };
 
 /**

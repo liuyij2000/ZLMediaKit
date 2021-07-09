@@ -186,6 +186,11 @@ void RtspSession::onRtcpPacket(int track_idx, SdpTrack::Ptr &track, const char *
     auto rtcp_arr = RtcpHeader::loadFromBytes((char *) data, len);
     for (auto &rtcp : rtcp_arr) {
         _rtcp_context[track_idx]->onRtcp(rtcp);
+        if (rtcp->pt == (uint8_t)RtcpType::RTCP_SR) {
+            auto sr = (RtcpSR *)rtcp;
+            _rtp_stamp_sync.inputRtpStamp(track_idx, sr->rtpts * uint64_t(1000) / _sdp_track[track_idx]->_samplerate,
+                                          sr->getNtpUnixStampMS());
+        }
     }
 }
 
@@ -1120,6 +1125,10 @@ std::shared_ptr<SockInfo> RtspSession::getOriginSock(MediaSource &sender) const 
 }
 
 void RtspSession::onBeforeRtpSorted(const RtpPacket::Ptr &rtp, int track_index){
+    if (_rtp_stamp_sync.ready() && track_index == 0) {
+        //fixme 此处时间戳可能溢出
+        rtp->getHeader()->stamp += (_rtp_stamp_sync.getRtpStampDiff() * rtp->sample_rate / 1000);
+    }
     updateRtcpContext(rtp);
 }
 
