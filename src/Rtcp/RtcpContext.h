@@ -38,7 +38,7 @@ public:
 
     /**
      * 输入sr rtcp包
-     * rtp使用ntp时间戳作为时间戳,用于实现rtsp音视频同步
+     * rtcp使用ntp时间戳作为时间戳,用于实现rtsp音视频同步
      * @param rtcp 输入一个rtcp
      */
     void onRtcp(RtcpHeader *rtcp);
@@ -110,7 +110,7 @@ private:
     size_t _last_cycle_packets = 0;
     //上次的seq
     uint16_t _last_rtp_seq = 0;
-    //上次的rtp时间戳,毫秒
+    //上次的rtp时间戳,非毫秒
     uint32_t _last_rtp_stamp = 0;
     uint64_t _last_ntp_stamp_ms = 0;
     //上次的rtp的系统时间戳(毫秒)用于统计抖动

@@ -110,10 +110,10 @@ string RtcpHeader::dumpHeader() const{
 }
 
 string RtcpHeader::dumpString() const {
-    switch ((RtcpType)pt) {
+    switch ((RtcpType)pt) {//RTCP类型
         case RtcpType::RTCP_SR: {
             RtcpSR *rtcp = (RtcpSR *)this;
-            return rtcp->dumpString();
+            return rtcp->dumpString();//调用派生类的dumpString,打印字段详情
         }
 
         case RtcpType::RTCP_RR: {
@@ -142,8 +142,8 @@ string RtcpHeader::dumpString() const {
 }
 
 size_t RtcpHeader::getSize() const {
-    //加上rtcp头长度
-    return (1 + ntohs(length)) << 2;
+    //加上rtcp头长度,32bit
+    return (1 + ntohs(length)) << 2;//16进制，左移2位
 }
 
 size_t RtcpHeader::getPaddingSize() const{
@@ -199,9 +199,10 @@ vector<RtcpHeader *> RtcpHeader::loadFromBytes(char *data, size_t len){
     vector<RtcpHeader *> ret;
     ssize_t remain = len;
     char *ptr = data;
+    //剩下的声明的数据长度>RTCP头长，RTCP包有数据
     while (remain > (ssize_t) sizeof(RtcpHeader)) {
         RtcpHeader *rtcp = (RtcpHeader *) ptr;
-        auto rtcp_len = rtcp->getSize();
+        auto rtcp_len = rtcp->getSize();//rtcp_len定义为RTCP包数据总长
         if (remain < (ssize_t)rtcp_len) {
             WarnL << "非法的rtcp包,声明的长度超过实际数据长度";
             break;
@@ -213,8 +214,8 @@ vector<RtcpHeader *> RtcpHeader::loadFromBytes(char *data, size_t len){
             //不能处理的rtcp包，或者无法解析的rtcp包，忽略掉
             WarnL << ex.what() << ",长度为:" << rtcp_len;
         }
-        ptr += rtcp_len;
-        remain -= rtcp_len;
+        ptr += rtcp_len;//指针指向下一个RTCP包
+        remain -= rtcp_len;//剩下的数据总长度
     }
     return ret;
 }
@@ -258,7 +259,7 @@ std::shared_ptr<RtcpSR> RtcpSR::create(size_t item_count) {
 
 string RtcpSR::getNtpStamp() const{
     struct timeval tv;
-    tv.tv_sec = ntpmsw - 0x83AA7E80;
+    tv.tv_sec = ntpmsw - 0x83AA7E80;//最高位字
     tv.tv_usec = (decltype(tv.tv_usec))(ntplsw / ((double) (((uint64_t) 1) << 32) * 1.0e-6));
     return LogChannel::printTime(tv);
 }
@@ -271,14 +272,15 @@ uint64_t RtcpSR::getNtpUnixStampMS() const {
 }
 
 void RtcpSR::setNtpStamp(struct timeval tv) {
+    //tv_usec (microseconds)微秒
     ntpmsw = htonl(tv.tv_sec + 0x83AA7E80); /* 0x83AA7E80 is the number of seconds from 1900 to 1970 */
     ntplsw = htonl((uint32_t) ((double) tv.tv_usec * (double) (((uint64_t) 1) << 32) * 1.0e-6));
 }
 
 void RtcpSR::setNtpStamp(uint64_t unix_stamp_ms) {
     struct timeval tv;
-    tv.tv_sec = unix_stamp_ms / 1000;
-    tv.tv_usec = (unix_stamp_ms % 1000) * 1000;
+    tv.tv_sec = unix_stamp_ms / 1000;//ms/1000单位为s,取整，得到sec
+    tv.tv_usec = (unix_stamp_ms % 1000) * 1000;//ms*1000得到us
     setNtpStamp(tv);
 }
 

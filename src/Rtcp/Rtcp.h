@@ -66,7 +66,7 @@ namespace mediakit {
         XX(RTCP_SDES_TOOL, 6) \
         XX(RTCP_SDES_NOTE, 7) \
         XX(RTCP_SDES_PRIVATE, 8)
-
+//没见过
 //https://datatracker.ietf.org/doc/rfc4585/?include_text=1
 //6.3.  Payload-Specific Feedback Messages
 //
@@ -99,6 +99,7 @@ namespace mediakit {
         XX(RTCP_PSFB_VBCM, 7) \
         XX(RTCP_PSFB_REMB, 15)
 
+//没见过
 //https://tools.ietf.org/html/rfc4585#section-6.2
 //6.2.   Transport Layer Feedback Messages
 //
@@ -174,6 +175,7 @@ const char *rtpfbTypeToStr(RTPFBType type);
 
 class RtcpHeader {
 public:
+//头长总共32bits
 #if __BYTE_ORDER == __BIG_ENDIAN
     //版本号，固定为2
     uint32_t version: 2;
@@ -199,8 +201,8 @@ private:
 public:
     /**
      * 解析rtcp并转换网络字节序为主机字节序，返回RtcpHeader派生类列表
-     * @param data 数据指针
-     * @param size 数据总长度
+     * @param data 数据指针->数据总长度
+     * @param size 声明的数据总长度
      * @return rtcp对象列表，无需free
      */
     static vector<RtcpHeader *> loadFromBytes(char *data, size_t size);
@@ -329,13 +331,14 @@ block  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 // sender report
+// 继承自RtcpHeader
 class RtcpSR : public RtcpHeader {
 public:
     friend class RtcpHeader;
     uint32_t ssrc;
-    // ntp timestamp MSW(in second)
+    // ntp timestamp MSW(in second)，最高位字
     uint32_t ntpmsw;
-    // ntp timestamp LSW(in picosecond)
+    // ntp timestamp LSW(in picosecond),最低位字
     uint32_t ntplsw;
     // rtp timestamp
     uint32_t rtpts;
@@ -359,13 +362,16 @@ public:
      * @param tv 时间
      */
     void setNtpStamp(struct timeval tv);
+    //已知的是ms时间戳，先转换成timeval形式再计算ntp
     void setNtpStamp(uint64_t unix_stamp_ms);
 
     /**
      * 返回ntp时间的字符串
      * 使用net2Host转换成主机字节序后才可使用此函数
      */
+    //打印时间戳
     string getNtpStamp() const;
+    //得到时间戳，用ms表示
     uint64_t getNtpUnixStampMS() const;
 
     /**
@@ -507,12 +513,13 @@ public:
 
 public:
     /**
-     * 返回改对象字节长度
+     * 返回该对象字节长度
      */
     size_t totalBytes() const;
 
     /**
      * 本对象最少长度
+     * 相当于txt_len=0;
      */
     static size_t minSize();
 
@@ -524,7 +531,8 @@ private:
     string dumpString() const;
 
     /**
-     * 网络字节序转换为主机字节序
+     * 网络字节序（大端）转换为主机字节序（小端）
+     * 将一个无符号长整形数从网络字节顺序转换为主机字节顺序
     */
     void net2Host();
 } PACKED;
