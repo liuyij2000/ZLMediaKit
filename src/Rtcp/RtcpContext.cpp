@@ -89,6 +89,7 @@ void RtcpContext::onRtcp(RtcpHeader *rtcp) {
                 if (!item->last_sr_stamp) {
                     continue;
                 }
+                
                 //rtp接收端收到sr包后，回复rr包的延时，已转换为毫秒
                 auto delay_ms = (uint64_t) item->delay_since_last_sr * 1000 / 65536;
                 //这个rr包对应sr包的ntpmsw和ntplsw

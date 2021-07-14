@@ -38,6 +38,7 @@ public:
 
     /**
      * 输入sr rtcp包
+     * rtp使用ntp时间戳作为时间戳,用于实现rtsp音视频同步
      * @param rtcp 输入一个rtcp
      */
     void onRtcp(RtcpHeader *rtcp);
