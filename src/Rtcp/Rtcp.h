@@ -26,6 +26,8 @@ namespace mediakit {
 #endif // defined(_WIN32)
 
 //http://www.networksorcery.com/enp/protocol/rtcp.htm
+//定义RTCP头部，不同类型对应的type号
+//PT：packet type
 #define RTCP_PT_MAP(XX) \
         XX(RTCP_FIR, 192) \
         XX(RTCP_NACK, 193) \
@@ -44,6 +46,16 @@ namespace mediakit {
         XX(RTCP_TOKEN, 210)
 
 //https://tools.ietf.org/html/rfc3550#section-6.5
+//SDES源描述RTCP报文
+//CNAME规范的终点标识
+//NAME用户名
+//EMAIL电子邮地址
+//PHONE电话号码
+//LOC用户地理定位
+//TOOL应用或工具名
+//NOTE通知状态
+//PRIV私人扩展
+
 #define SDES_TYPE_MAP(XX) \
         XX(RTCP_SDES_END, 0) \
         XX(RTCP_SDES_CNAME, 1) \
@@ -59,7 +71,7 @@ namespace mediakit {
 //6.3.  Payload-Specific Feedback Messages
 //
 //   Payload-Specific FB messages are identified by the value PT=PSFB as
-//   RTCP message type.
+//   RTCP message type.(FB:Feedback)
 //
 //   Three payload-specific FB messages are defined so far plus an
 //   application layer FB message.  They are identified by means of the
