@@ -1,0 +1,21 @@
+Performing C++ SOURCE FILE Test HAVE_MYSQL_OPT_EMBEDDED_CONNECTION failed with the following output:
+Change Dir: /home/liuyijing/liuyij/ZLMediaKit/linux_build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_a17b2/fast"
+/usr/bin/make -f CMakeFiles/cmTC_a17b2.dir/build.make CMakeFiles/cmTC_a17b2.dir/build
+make[1]: Entering directory '/home/liuyijing/liuyij/ZLMediaKit/linux_build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_a17b2.dir/src.cxx.o
+/usr/bin/c++    -DHAVE_MYSQL_OPT_EMBEDDED_CONNECTION   -o CMakeFiles/cmTC_a17b2.dir/src.cxx.o -c /home/liuyijing/liuyij/ZLMediaKit/linux_build/CMakeFiles/CMakeTmp/src.cxx
+/home/liuyijing/liuyij/ZLMediaKit/linux_build/CMakeFiles/CMakeTmp/src.cxx:1:10: fatal error: mysql.h: No such file or directory
+ #include <mysql.h>
+          ^~~~~~~~~
+compilation terminated.
+CMakeFiles/cmTC_a17b2.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_a17b2.dir/src.cxx.o' failed
+make[1]: *** [CMakeFiles/cmTC_a17b2.dir/src.cxx.o] Error 1
+make[1]: Leaving directory '/home/liuyijing/liuyij/ZLMediaKit/linux_build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_a17b2/fast' failed
+make: *** [cmTC_a17b2/fast] Error 2
+
+Source file was:
+#include <mysql.h>
+int main() { int i = MYSQL_OPT_USE_EMBEDDED_CONNECTION; }

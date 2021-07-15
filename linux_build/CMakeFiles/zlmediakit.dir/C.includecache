@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/liuyijing/liuyij/ZLMediaKit/src/Extension/SPSParser.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+stdint.h
+-
+SPSParser.h
+/home/liuyijing/liuyij/ZLMediaKit/src/Extension/SPSParser.h
+
+/home/liuyijing/liuyij/ZLMediaKit/src/Extension/SPSParser.h
+
